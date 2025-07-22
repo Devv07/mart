@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<section class="container my-4">
+    <h2 class="text-2xl font-bold mb-4">Add Product</h2>
+    {% bootstrap_messages %}
+    <form method="post" enctype="multipart/form-data" class="glass p-4" style="max-width: 600px; margin: auto;">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary w-100">Add Product</button>
+    </form>
+</section>
+{% endblock %}

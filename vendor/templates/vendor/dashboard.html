@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Vendor Dashboard{% endblock %}
+
+{% block content %}
+<section class="vendor-dashboard">
+    <div class="container mt-5">
+        <!-- Vendor Profile -->
+        <div class="vendor-details glass mb-4 p-4">
+            <h3>Vendor Profile</h3>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>Role:</strong> {{ user.role }}</p>
+        </div>
+
+        <div class="glass p-4">
+            <h3>Manage Products</h3>
+            <a href="{% url 'vendor:product_create' %}" class="btn btn-primary mb-3">Add Product</a>
+            <h3>Manage Categories</h3>
+            <a href="{% url 'vendor:category_form' %}" class="btn btn-primary mb-3">Add Category</a>
+        </div>
+
+        <!-- Vendor Orders -->
+        <div class="order-details glass p-4 mb-4">
+            <h3>Orders</h3>
+            {% if orders %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>User</th>
+                            <th>Quantity</th>
+                            <th>Total (NPR)</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.product.name }}</td>
+                            <td>{{ order.user.email }}</td>
+                            <td>{{ order.quantity }}</td>
+                            <td>{{ order.total_amount|floatformat:2 }}</td>
+                            <td>{{ order.status }}</td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <a href="{% url 'vendor:manage_order' order.id %}" class="btn btn-sm btn-primary">Manage</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No orders found.</p>
+            {% endif %}
+        </div>
+
+        <!-- Vendor Products -->
+        <div class="product-details glass p-4">
+            <h3>Your Products</h3>
+            {% if products %}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price (NPR)</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.category|default:"No category" }}</td>
+                            <td>{{ product.price|floatformat:2 }}</td>
+                            <td>{{ product.stock }}</td>
+                            <td>{{ product.is_new|yesno:"New,Standard" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No products found.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

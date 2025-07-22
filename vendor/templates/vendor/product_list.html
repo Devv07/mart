@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+<div class="container mx-auto mt-10">
+    <h2 class="text-2xl font-bold mb-6 text-center">Products</h2>
+    {% bootstrap_messages %}
+    <form method="get" class="mb-6">
+        <div class="flex space-x-4">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search products..." class="form-input w-full p-2 border rounded">
+            <select name="category" class="form-select p-2 border rounded">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category.id|stringformat:"s" == request.GET.category %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+    {% if products %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for product in products %}
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover rounded mb-4">
+                    {% else %}
+                        <div class="w-full h-48 bg-gray-200 rounded mb-4 flex items-center justify-center">
+                            <span>No Image</span>
+                        </div>
+                    {% endif %}
+                    <h4 class="text-lg font-bold">{{ product.name }}</h4>
+                    <p class="text-gray-600">{{ product.description|truncatewords:20 }}</p>
+                    <p class="text-green-600 font-semibold">NPR {{ product.price }}</p>
+                    <p class="text-gray-600">Stock: {{ product.stock }}</p>
+                    <p class="text-gray-600">
+                        {% with avg_rating=product.reviews.aggregate(avg_rating=models.Avg('rating')) %}
+                            {% if avg_rating.avg_rating %}
+                                Rating: {{ avg_rating.avg_rating|floatformat:1 }}/5
+                            {% else %}
+                                Rating: No reviews yet
+                            {% endif %}
+                        {% endwith %}
+                    </p>
+                    {% if user.is_authenticated and user.role == 'user' %}
+                        <form method="post" action="{% url 'user:add_to_cart' product.pk %}" class="mt-4">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-input w-20 p-1 border rounded">
+                            <button type="submit" class="btn btn-primary mt-2">Add to Cart</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+        {% if products.has_other_pages %}
+            <div class="mt-6 flex justify-center">
+                <ul class="pagination">
+                    {% if products.has_previous %}
+                        <li><a href="?page={{ products.previous_page_number }}&q={{ query }}&category={{ request.GET.category }}" class="btn btn-secondary">Previous</a></li>
+                    {% endif %}
+                    {% for num in products.paginator.page_range %}
+                        <li><a href="?page={{ num }}&q={{ query }}&category={{ request.GET.category }}" class="btn {% if products.number == num %}btn-primary{% else %}btn-secondary{% endif %}">{{ num }}</a></li>
+                    {% endfor %}
+                    {% if products.has_next %}
+                        <li><a href="?page={{ products.next_page_number }}&q={{ query }}&category={{ request.GET.category }}" class="btn btn-secondary">Next</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="text-gray-600 text-center">No products found.</p>
+    {% endif %}
+</div>
+{% endblock %}

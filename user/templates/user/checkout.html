@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-2xl font-bold mb-4">Checkout</h2>
+    <div class="glass p-4">
+        <h3>Order Summary</h3>
+        {% for item in cart_items %}
+        <p>Product: {{ item.product.name }} | Quantity: {{ item.quantity }} | Price: NPR {{ item.product.price|floatformat:2 }}</p>
+        {% endfor %}
+        <p>Total Amount: NPR {{ total|floatformat:2 }}</p>
+        <form action="{{ esewa_url }}" method="post">
+            {% for key, value in esewa_params.items %}
+                <input type="hidden" name="{{ key }}" value="{{ value }}">
+            {% endfor %}
+            <button type="submit" class="btn btn-success">Pay with eSewa</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

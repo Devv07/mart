@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Manage Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Manage Order #{{ order.id }}</h2>
+    <div class="order-details glass p-4">
+        <p><strong>Product:</strong> {{ order.product.name }}</p>
+        <p><strong>User:</strong> {{ order.user.email }}</p>
+        <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+        <p><strong>Total (NPR):</strong> {{ order.total_amount|floatformat:2 }}</p>
+        <p><strong>Status:</strong> {{ order.status }}</p>
+        {% if order.status == 'pending' %}
+            <form method="post" action="{% url 'vendor:manage_order' order.id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="status" class="form-label">Update Status</label>
+                    <select class="form-control" id="status" name="status">
+                        <option value="processing">Accept (Processing)</option>
+                        <option value="cancelled">Reject (Cancelled)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </form>
+        {% else %}
+            <p>This order cannot be updated (status is not pending).</p>
+        {% endif %}
+        <a href="{% url 'vendor:dashboard' %}" class="btn btn-secondary mt-3">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

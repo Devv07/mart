@@ -1,0 +1,119 @@
+{% load static %}
+{% load django_bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-store"></i>
+            Mega Mart
+        </div>
+        <nav class="nav-links">
+            <a href="{% url 'core:home' %}">Home</a>
+            <a href="{% url 'user:product_list' %}">Products</a>
+            <a href="{% url 'user:product_list' %}">Categories</a>
+            <a href="{% url 'user:product_list' %}?q=deals">Deals</a>
+            <a href="{% url 'user:product_list' %}?q=new">New</a>
+        </nav>
+        <div class="header-actions">
+            <div class="search-container">
+                <form method="get" action="{% url 'user:product_list' %}">
+                    <input type="text" name="q" placeholder="Search for anything..." value="{{ query }}">
+                    <button type="submit"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            {% if user.is_authenticated %}
+                <a href="{% if user.role == 'vendor' %}{% url 'vendor:dashboard' %}{% else %}{% url 'user:dashboard' %}{% endif %}" class="action-btn">
+                    <i class="fas fa-user"></i>
+                </a>
+                <a href="{% url 'user:product_list' %}" class="action-btn">
+                    <i class="fas fa-heart"></i>
+                </a>
+                <a href="{% url 'user:cart' %}" class="action-btn cart">
+                    <i class="fas fa-shopping-bag"></i>
+                    {% if cart_count %}
+                    <div class="cart-count">{{ cart_count }}</div>
+                    {% endif %}
+                </a>
+                <a href="{% url 'core:logout' %}" class="action-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            {% else %}
+                <a href="{% url 'core:login' %}" class="action-btn">
+                    <i class="fas fa-user"></i>
+                </a>
+                <a href="{% url 'core:login' %}" class="action-btn">
+                    <i class="fas fa-heart"></i>
+                </a>
+                <a href="{% url 'user:cart' %}" class="action-btn cart">
+                    <i class="fas fa-shopping-bag"></i>
+                </a>
+            {% endif %}
+        </div>
+    </header>
+    <div class="container">
+        {% bootstrap_messages %}
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div class="ai-assistant">
+        <div class="ai-toggle">
+            <i class="fas fa-robot"></i>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-column">
+                <h3>MEGAMART</h3>
+                <p style="color: var(--gray); margin-bottom: 24px;">The future of shopping is here. Experience products like never before.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h3>Shop</h3>
+                <ul class="footer-links">
+                    <li><a href="{% url 'user:product_list' %}"><i class="fas fa-chevron-right"></i> All Products</a></li>
+                    <li><a href="{% url 'user:product_list' %}?q=featured"><i class="fas fa-chevron-right"></i> Featured Items</a></li>
+                    <li><a href="{% url 'user:product_list' %}?q=new"><i class="fas fa-chevron-right"></i> New Arrivals</a></li>
+                    <li><a href="{% url 'user:product_list' %}?q=sale"><i class="fas fa-chevron-right"></i> Sale</a></li>
+                    <li><a href="{% url 'user:product_list' %}?q=deals"><i class="fas fa-chevron-right"></i> Deals</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Help</h3>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Support Center</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Shipping Info</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> Returns & Exchanges</a></li>
+                    <li><a href="#"><i class="fas fa-chevron-right"></i> FAQs</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h3>Newsletter</h3>
+                <p style="color: var(--gray); margin-bottom: 20px;">Subscribe to get special offers, free giveaways, and future updates.</p>
+                <div class="newsletter">
+                    <input type="email" placeholder="Your email address">
+                    <button class="btn btn-primary" style="width: 100%;">Subscribe</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

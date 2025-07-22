@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% load cart_tags %}
+
+{% block content %}
+<section class="container my-4">
+    <h2 class="text-2xl font-bold mb-4">{{ product.name }}</h2>
+    {% bootstrap_messages %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="product-image" style="position: relative;">
+                <div class="product-badge">
+                    {% if product.is_new %}
+                        NEW
+                    {% elif product.stock <= 5 %}
+                        LIMITED
+                    {% else %}
+                        HOT
+                    {% endif %}
+                </div>
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <img src="https://via.placeholder.com/200" alt="No image">
+                {% endif %}
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="product-info glass p-4">
+                <div class="product-meta">
+                    <span class="product-category">Category: {{ product.category|default:"No category" }}</span> |
+                    <span class="product-rating">
+                        <i class="fas fa-star"></i> {{ product.avg_rating|floatformat:1|default:"No reviews" }}
+                    </span>
+                </div>
+                <h3 class="product-title">{{ product.name }}</h3>
+                <p class="text-muted">{{ product.description }}</p>
+                <div class="product-price">
+                    <span class="current-price">NPR {{ product.price|floatformat:2 }}</span>
+                    {% if product.original_price and product.original_price > product.price %}
+                    <span class="original-price">NPR {{ product.original_price|floatformat:2 }}</span>
+                    <span class="discount">{{ product.discount_percentage }}% off</span>
+                    {% endif %}
+                </div>
+                <p class="mt-2">Stock: {{ product.stock }}</p>
+                <div class="product-actions mt-3">
+                    <form action="{% url 'user:add_to_cart' pk=product.id %}" method="post" class="d-inline-block">
+                        {% csrf_token %}
+                        <div class="input-group" style="max-width: 200px;">
+                            <input type="number" name="quantity" class="form-control" value="1" min="1" max="{{ product.stock }}" required>
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </div>
+                    </form>
+                    <form action="{% url 'user:add_to_wishlist' pk=product.id %}" method="post" class="d-inline-block ms-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="fas fa-heart" style="color: '{% if product.id in wishlist %}#ff4d4d{% else %}#ccc{% endif %}';"></i>
+                            {% if product.id in wishlist %} Remove from Wishlist {% else %} Add to Wishlist {% endif %}
+                        </button>
+                    </form>
+                    <form action="{% url 'user:buy_now' pk=product.id %}" method="post" class="d-inline-block ms-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Buy Now</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

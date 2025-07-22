@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+{% load cart_tags %}
+
+{% block content %}
+<section class="container my-4">
+    <h2 class="text-2xl font-bold mb-4">Shopping Cart</h2>
+    {% bootstrap_messages %}
+    {% if cart_items %}
+    <div class="table-responsive glass p-4">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <img src="{{ item.product.image.url|default:'https://via.placeholder.com/50' }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                            <span class="ms-2">{{ item.product.name|truncatechars:50 }}</span>
+                        </div>
+                    </td>
+                    <td>NPR {{ item.product.price|floatformat:2 }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>NPR {{ item.product.price|multiply:item.quantity|floatformat:2 }}</td>
+                    <td>
+                        <form action="{% url 'user:remove_from_cart' item.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h4 class="text-end">Total: NPR {{ total|floatformat:2 }}</h4>
+        <div class="text-end mt-3">
+            <a href="{% url 'user:checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+        </div>
+    </div>
+    {% else %}
+    <p>Your cart is empty. <a href="{% url 'user:product_list' %}" class="text-blue-600">Browse products</a>.</p>
+    {% endif %}
+</section>
+{% endblock %}

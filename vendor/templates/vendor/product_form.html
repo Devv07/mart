@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+<div class="container max-w-lg mx-auto mt-10">
+    <h2 class="text-2xl font-bold mb-6 text-center">{% if form.instance.pk %}Update Product{% else %}Create Product{% endif %}</h2>
+    {% bootstrap_messages %}
+    <form method="post" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary w-full">{% if form.instance.pk %}Update{% else %}Create{% endif %}</button>
+        {% csrf_token %}
+    </form>
+</div>
+{% endblock %}

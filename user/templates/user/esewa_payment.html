@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Proceed to eSewa Payment</h2>
+    <form action="{{ esewa_payment_url }}" method="POST">
+        {% for key, value in payment_data.items %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Pay with eSewa</button>
+    </form>
+</div>
+{% endblock %}
